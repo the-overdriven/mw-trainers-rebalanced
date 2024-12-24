@@ -177,7 +177,7 @@ end
 --- Executed when training window appears (3x, for each skill):
 --- * resets training iterations,
 --- * updates training price,
---- * logs trainer skills to help debugging
+--- * logs trainer skills to help debug
 --- @param e calcTrainingPriceEventData
 local function calcTrainingPriceCallback(e)
   log('[TRU][calcTrainingPriceCallback] -----------------------------------')
@@ -238,7 +238,7 @@ local function skillRaisedCallback(e)
     -- move to last iteration?
     tes3.messageBox({
       message = string.format(
-        'The training has payed off. %s has shared their %s experience (%s) about %s with you, and you\'ve improved from %s to %s. There is nothing more %s can teach you about %s. Take a break, ask about something else, or find other teacher.', 
+        'The training has paid off. %s has shared their %s experience (%s) about %s with you, and you\'ve improved from %s to %s. There is nothing more %s can teach you about %s. Take a break, ask about something else, or find other teacher.', 
         g_trainerCurrentMobile.object.name,
         tierLabels[trainerTier],
         trainerSkillValueOriginal,
