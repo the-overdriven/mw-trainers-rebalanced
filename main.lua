@@ -212,13 +212,6 @@ local function skillRaisedCallback(e)
   local trainerSkillValueOriginal = g_trainerCurrentMobile:getSkillValue(skillId)
   local trainerTier = getTrainerTier(trainerSkillValueOriginal)
 
-  -- log('[TRU][skillRaisedCallback] g_trainingIterations left: %s (of %s)', g_trainingIterations, trainerTier)
-  -- log('[TRU][skillRaisedCallback] trained at NPC: %s', g_trainerCurrentId)
-  -- log('[TRU][skillRaisedCallback] trained skill id: %s (%s)', skillId, skills[skillId])
-  -- log('[TRU][skillRaisedCallback] trainerTier: %s', trainerTier)
-  -- log('[TRU][skillRaisedCallback] trainer\'s skill value: %s', trainerSkillValueOriginal)
-  -- log('[TRU][skillRaisedCallback] trained to level: %s', e.level)
-
   log([[
   g_trainingIterations left: %s (of %s)
   trained at NPC: %s
