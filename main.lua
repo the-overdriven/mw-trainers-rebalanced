@@ -1,6 +1,6 @@
 -- https://www.nexusmods.com/morrowind/mods/55629
 
-local isDebugOn = true
+local isDebugOn = false
 
 local g_trainerCurrent
 local g_trainerCurrentMobile
@@ -174,7 +174,10 @@ function hideTrainerSkills(npcRef)
   end
 end
 
---- Executed when training window appears
+--- Executed when training window appears (3x, for each skill):
+--- * resets training iterations,
+--- * updates training price,
+--- * logs trainer skills to help debugging
 --- @param e calcTrainingPriceEventData
 local function calcTrainingPriceCallback(e)
   log('[TRU][calcTrainingPriceCallback] -----------------------------------')
@@ -209,12 +212,21 @@ local function skillRaisedCallback(e)
   local trainerSkillValueOriginal = g_trainerCurrentMobile:getSkillValue(skillId)
   local trainerTier = getTrainerTier(trainerSkillValueOriginal)
 
-  log('[TRU][skillRaisedCallback] g_trainingIterations left: %s (of %s)', g_trainingIterations, trainerTier)
-  log('[TRU][skillRaisedCallback] trained at NPC: %s', g_trainerCurrentId)
-  log('[TRU][skillRaisedCallback] trained skill id: %s (%s)', skillId, skills[skillId])
-  log('[TRU][skillRaisedCallback] trainerTier: %s', trainerTier)
-  log('[TRU][skillRaisedCallback] trainer\'s skill value: %s', trainerSkillValueOriginal)
-  log('[TRU][skillRaisedCallback] trained to level: %s', e.level)
+  -- log('[TRU][skillRaisedCallback] g_trainingIterations left: %s (of %s)', g_trainingIterations, trainerTier)
+  -- log('[TRU][skillRaisedCallback] trained at NPC: %s', g_trainerCurrentId)
+  -- log('[TRU][skillRaisedCallback] trained skill id: %s (%s)', skillId, skills[skillId])
+  -- log('[TRU][skillRaisedCallback] trainerTier: %s', trainerTier)
+  -- log('[TRU][skillRaisedCallback] trainer\'s skill value: %s', trainerSkillValueOriginal)
+  -- log('[TRU][skillRaisedCallback] trained to level: %s', e.level)
+
+  log([[
+  g_trainingIterations left: %s (of %s)
+  trained at NPC: %s
+  trained skill id: %s (%s)
+  trainerTier: %s
+  trainer's skill value: %s
+  trained to level: %s
+  ]], g_trainingIterations, trainerTier, g_trainerCurrentId, skillId, skills[skillId], trainerTier, trainerSkillValueOriginal, e.level)
 
   if g_trainingIterations == nil then
     -- this is executed once per skill train loop, in FIRST iteration
@@ -230,6 +242,7 @@ local function skillRaisedCallback(e)
     log('[TRU][skillRaisedCallback] %s teached %s for the first time, CREATED tes3.player.data.trainedAt[g_trainerCurrentId][skillId]', g_trainerCurrent, skills[skillId])
     tes3.player.data.trainedAt[g_trainerCurrentId][skillId] = g_trainerCurrentMobile:getSkillValue(skillId)
 
+    -- move to last iteration?
     tes3.messageBox({
       message = string.format(
         'The training has payed off. %s has shared their %s experience (%s) about %s with you, and you\'ve improved from %s to %s. There is nothing more %s can teach you about %s. Take a break, ask about something else, or find other teacher.', 
@@ -254,7 +267,7 @@ local function skillRaisedCallback(e)
 
     -- take xp overflow into account!
     -- check if the skill that we're leveling up had any progress, and then add it
-    -- current getSkillProgressRequirement is 100% (when on UI it's 0/100), 
+    -- after leveling current getSkillProgressRequirement is always 100% (when on UI it's 0/100), 
     -- so whatever progress was required before training (the old value in g_pcSkillProgressRequirement[skillId])
     -- needs to be subtracted from getSkillProgressRequirement and the result should be added to current progress 
     -- (for simplicity it assumes progress is linear, but in fact higher levels should have bigger requirements)
