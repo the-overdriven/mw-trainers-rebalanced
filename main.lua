@@ -238,7 +238,7 @@ local function skillRaisedCallback(e)
     -- move to last iteration?
     tes3.messageBox({
       message = string.format(
-        'The training has payed off. %s has shared their %s experience (%s) about %s with you, and you\'ve improved your skill level from %s to %s. There is nothing more %s can teach you about %s. Take a break, ask about something else, or find other teacher.', 
+        'The training has paid off. %s has shared their %s experience (%s) about %s with you, and you\'ve improved your skill level from %s to %s. There is nothing more %s can teach you about %s. Take a break, ask about something else, or find other teacher.', 
         g_trainerCurrentMobile.object.name,
         tierLabels[trainerTier],
         trainerSkillValueOriginal,
