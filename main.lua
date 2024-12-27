@@ -103,11 +103,11 @@ local function onMouseButtonDown(e)
 end
 event.register('mouseButtonDown', onMouseButtonDown)
 
---- Triggers hiding selected skills when training window is opened
---- and restoring selected skills when dialogue/training window is closed
+--- Triggers hiding NPC's selected skills when training window is opened
+--- and restoring those skills when dialogue/training window is closed
 --- @param e uiEventEventData
 local function uiEventCallback(e)
-  mwse.log('parent %s, property %s, source %s', e.parent, e.property, e.source)
+  log('parent %s, property %s, source %s', e.parent, e.property, e.source)
   local mouseDown = 4294934580 -- mouseDown, on mouseClick parent and source is nil
 
   local closeButtons = {
@@ -147,6 +147,8 @@ event.register(tes3.event.uiEvent, uiEventCallback)
 -- this is actually not needed anymore, except tests
 
 --- Hides skills that a selected NPC has teached already
+--- by decreasing them to "1" temporarily
+--- to prevent skilling more than once
 function hideTrainerSkills(npcRef)
   log('[TRU][hideTrainerSkills] -----------------------------------')
 
@@ -158,13 +160,11 @@ function hideTrainerSkills(npcRef)
   g_trainerCurrent = npcRef
   g_trainerCurrentId = g_trainerCurrent.id
   g_trainerCurrentMobile = npcRef.mobile
-  mwse.log('[TRU][hideTrainerSkills] g_trainerCurrent: %s, g_trainerCurrentId: %s, g_trainerCurrentMobile: %s', g_trainerCurrent, g_trainerCurrentId, g_trainerCurrentMobile)
+  log('[TRU][hideTrainerSkills] g_trainerCurrent: %s, g_trainerCurrentId: %s, g_trainerCurrentMobile: %s', g_trainerCurrent, g_trainerCurrentId, g_trainerCurrentMobile)
 
   if (tes3.player.data.trainedAt 
   and tes3.player.data.trainedAt[g_trainerCurrentId]) then
-    -- for each already trained skill in tes3.player.data.trainedAt[g_trainerCurrentId]
-    -- decrease current trainer's skill value to 1, to prevent skilling more than once
-    -- TODO: this could be copied to skillRaisedCallback to refresh available skills sooner, but it might be confusing for player
+    -- for each already trained skill in tes3.player.data.trainedAt[g_trainerCurrentId] decrease current trainer's skill value to 1
     for skillId, skillValue in pairs(tes3.player.data.trainedAt[g_trainerCurrentId]) do
       log('[TRU][hideTrainerSkills] ALREADY trained skillId %s (%s) at %s, block it', skillId, skills[skillId], g_trainerCurrentId)
       log('[TRU][hideTrainerSkills] trainer\'s skill BEFORE: %s', trainerSkillValueOriginal)
@@ -238,7 +238,7 @@ local function skillRaisedCallback(e)
     -- move to last iteration?
     tes3.messageBox({
       message = string.format(
-        'The training has paid off. %s has shared their %s experience (%s) about %s with you, and you\'ve improved from %s to %s. There is nothing more %s can teach you about %s. Take a break, ask about something else, or find other teacher.', 
+        'The training has payed off. %s has shared their %s experience (%s) about %s with you, and you\'ve improved your skill level from %s to %s. There is nothing more %s can teach you about %s. Take a break, ask about something else, or find other teacher.', 
         g_trainerCurrentMobile.object.name,
         tierLabels[trainerTier],
         trainerSkillValueOriginal,
